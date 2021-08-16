@@ -9,7 +9,7 @@ class Promotion(models.Model):
 
 class Collection(models.Model):
     title=models.CharField(max_length=255)
-    featured_product=models.ForeignKey('Product',on_delete=models.SET_NULL,null=True,related_name='+')
+    featured_product=models.ForeignKey('Product',on_delete=models.SET_NULL,null=True,related_name='+',blank=True)
 
     def __str__(self) -> str:
         return self.title
@@ -26,6 +26,10 @@ class Product(models.Model):
     last_update=models.DateTimeField(auto_now=True)
     collection=models.ForeignKey(Collection,on_delete=models.PROTECT)
     promotions=models.ManyToManyField(Promotion,blank=True)
+    active=models.BooleanField(null=False,default=False)
+    trending=models.BooleanField(default=False)
+    hot=models.BooleanField(default=False)
+    product_image=models.ImageField(upload_to='images/',null=True,blank=True)
 
     def __str__(self) -> str:
         return self.title
@@ -93,8 +97,23 @@ class Item(models.Model):
 
 class Banner(models.Model):
     title=models.CharField(max_length=255)
+    description=models.CharField(max_length=255)
     slug=models.CharField(max_length=255)
     photo=models.ImageField(upload_to='images/')
+    active=models.BooleanField(null=False,default=False)
+    large=models.BooleanField(null=False,default=False)
+  
+
 class Photo(models.Model):
     product_image=models.ImageField(upload_to='images/')
     product=models.ForeignKey(Product,null=False,blank=False,on_delete=models.CASCADE)
+
+class event(models.Model):
+    title=models.CharField(max_length=255,null=False)
+    description=models.TextField(max_length=255,null=True)
+    price=models.DecimalField(max_digits=6,decimal_places=0)
+    discount_price=models.DecimalField(max_digits=6,decimal_places=0)
+    date=models.DateField()
+    photo=models.ImageField(upload_to='images/',null=True)
+
+

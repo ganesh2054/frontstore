@@ -24,11 +24,11 @@ class InventoryFilter(admin.SimpleListFilter):
             return queryset.filter(inventory__lt=10)
         
 
-class ImageInline(admin.TabularInline):
-  model = models.Photo
-  autocomplete_fields=['product']
-  max_num=10
-  extra=0
+# class ImageInline(admin.TabularInline):
+#   model = models.Photo
+#   autocomplete_fields=['product']
+#   max_num=10
+#   extra=0
   
 
 ##Product
@@ -44,17 +44,26 @@ class ProductAdmin(admin.ModelAdmin):
 
    # readonly_fields=['title']
     search_fields=['title']
-    inlines=[ImageInline]
+    # inlines=[ImageInline]
  
     action=['clear_inventory']
-    list_display=['title','unit_price','description','last_update','slug','inventory','inventory_status','collection_title','photo_title']
+    list_display=['title','unit_price','description','last_update','slug','inventory','inventory_status','hot','trending','active','collection_title','product_thumnail']
     list_editable=['unit_price']
     list_filter=['collection','last_update',InventoryFilter]
     list_per_page=10
     list_select_related=['collection']
+
+    def product_thumnail(self, obj):
+        return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
+            url = obj.product_image.url,
+            width='250',
+            height='200',
+            )
+    )
+
     
-    def queryset(self, request,queryset):
-            return queryset.filter(photo_title=Product.objects.all()[:1].get())
+    # def queryset(self, request):
+    #         return queryset.filter(photo_title=Product.objects.all()[:1].get())
 
 
    # readonly_fields = ['product_image']
@@ -106,6 +115,7 @@ class CustomerAdmin(admin.ModelAdmin):
             'customer__id':str(customer.id)
         }))
         return format_html('<a href="{}">{}</a>',url,customer.customer_order)
+
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(customer_order=Count('order'))
 
@@ -169,5 +179,17 @@ class BannerAdmin(admin.ModelAdmin):
             )
     )
 
+@admin.register(models.event)
+class EventAdmin(admin.ModelAdmin):
+    list_display=['title','description','price','discount_price','date','event_thumnail']
+    def event_thumnail(self, obj):
+        return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
+            url = obj.photo.url,
+            width='150',
+            height='100',
+            )
+    )
+
+    
 
 
