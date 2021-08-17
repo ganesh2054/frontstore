@@ -28,7 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls)),
     # path('Store/',include('Store.urls'))
-    path('',v.say_hello)
+    path('',v.Index.as_view(),name='homepage')
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,

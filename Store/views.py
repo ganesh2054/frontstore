@@ -1,21 +1,53 @@
 from django.db.models import Q
 from django.db.models.expressions import Value
 from Store.models import Banner, Collection, Customer, Order, Product, event, orderItem
-from django.shortcuts import render
+from django.shortcuts import redirect, render,reverse
 from django.http import HttpResponse
 from django.db.models.aggregates import Count,Max
+from django.views import View
 
-def say_hello(request):
-    cid=request.GET.get('cat')
-    banner=Banner.objects.filter(active=True,large=True).first()
-    queryset=Banner.objects.filter(active=True,large=False)
-    category=Collection.objects.all()
-    if cid:
-        trending=Product.objects.filter(trending=True,active=True).filter(collection__id=cid)
-    else:
-        trending=Product.objects.filter(trending=True,active=True).filter()
-    hot=Product.objects.filter(hot=True,active=True)
-    eventp=event.objects.last()
-    return render(request,'index.html',{'topbanner':banner,'smallbanner':list(queryset),'category':list(category),'trending':list(trending),'hot':list(hot),'event':eventp})
+class Index(View):
+    def post(self,request):
+        product=request.POST.get('product')
+        cart=request.session.get('cart')
+        if cart:
+            quantity=cart.get(product)
+            if quantity:
+                cart[product]=quantity+1
+            else:
+                cart[product]=1
+
+        else:
+            cart={}
+            cart[product]=1
+        
+
+        ids=list(request.session['cart'].keys())
+        cartproduct=Product.get_product_by_id(ids)
+        kw={'cart_product':cartproduct}
+        return redirect ('homepage',**kw)
+
+
+    def get(self,request,**kw):
+        cart = request.session.get('cart')
+        if not cart:
+            request.session['cart'] = {}
+        cid=request.GET.get('cat')
+        banner=Banner.objects.filter(active=True,large=True).first()
+        queryset=Banner.objects.filter(active=True,large=False)
+        category=Collection.objects.all()
+        if cid:
+            trending=Product.objects.filter(trending=True,active=True).filter(collection__id=cid)
+        else:
+            trending=Product.objects.filter(trending=True,active=True).filter()
+        hot=Product.objects.filter(hot=True,active=True)
+        eventp=event.objects.last()
+  
+        return render(request,'index.html',{'topbanner':banner,'smallbanner':list(queryset),'category':list(category),'trending':list(trending),'hot':list(hot),'event':eventp,**kw})
+
+
+
+
+
 
 

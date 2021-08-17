@@ -36,6 +36,9 @@ class Product(models.Model):
 
     class Meta:
         ordering=['title']
+    @staticmethod
+    def get_product_by_id(ids):
+        return Product.objects.filter(id__in=ids)
 
 class Customer(models.Model):
     MEMBERSHIP_BRONZE='B'
