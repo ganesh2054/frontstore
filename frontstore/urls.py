@@ -28,7 +28,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls)),
     # path('Store/',include('Store.urls'))
-    path('',v.Index.as_view(),name='homepage')
+    path('',v.Index.as_view(),name='homepage'),
+    path('cart',v.Cart.as_view(),name='cartpage')
 ]
 if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL,
